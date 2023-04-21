@@ -3,6 +3,7 @@ import { Footer } from '../../components/commons/Footer';
 import { Menu } from '../../components/commons/Menu';
 import { Box, Text, theme } from '../../theme/components';
 import cmsService from '../../infra/cms/cmsService';
+import { StructuredText } from 'react-datocms';
 
 export async function getServerSideProps(ctx) {
   const { id } = ctx.params;
@@ -63,7 +64,7 @@ export default function FAQQuestionScreen(props) {
             {props.title}
           </Text>
 
-          <Box dangerouslySetInnerHTML={{ __html: props.content }} />
+          <StructuredText data={props.content} />
         </Box>
       </Box>
 
