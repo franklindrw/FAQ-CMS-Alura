@@ -2,37 +2,36 @@ import Head from 'next/head';
 import { Footer } from '../../components/commons/Footer';
 import { Menu } from '../../components/commons/Menu';
 import { Box, Text, theme } from '../../theme/components';
+import cmsService from '../../infra/cms/cmsService';
 
-export async function getStaticPaths() {
-  return {
-    paths: [
-      { params: { id: 'f138c88d' } },
-      { params: { id: 'h138c88d' } },
-    ],
-    fallback: false,
-  };
-}
+export async function getServerSideProps(ctx) {
+  const { id } = ctx.params;
 
-export function getStaticProps({ params }) {
-  const { id } = params;
+  const contentQuery = `
+    query {
+      contentFaqQuestion {
+        title
+        content {
+          value
+        }
+      }
+    } 
+  `;
+
+  const { data } = await cmsService({
+    query: contentQuery,
+  });
+
   return {
     props: {
       id,
-      title: 'Fake Title',
-      content: `
-        <h2>Primeiro Tópico</h2>
-        <p>paragrafo simples</p>
-        <p>outro paragrafo simples</p>
-        <ul>
-          <li>Item de lista 01</li>
-          <li>Item de lista 02</li>
-        </ul>
-      `,
+      title: data.contentFaqQuestion.title,
+      content: data.contentFaqQuestion.content,
     }
   }
 }
 
-export default function FAQQuestionScreen({ title, content }) {
+export default function FAQQuestionScreen(props) {
   return (
     <>
       <Head>
@@ -61,10 +60,10 @@ export default function FAQQuestionScreen({ title, content }) {
           }}
         >
           <Text tag="h1" variant="heading1">
-            {title}
+            {props.title}
           </Text>
 
-          <Box dangerouslySetInnerHTML={{ __html: content }} />
+          <Box dangerouslySetInnerHTML={{ __html: props.content }} />
         </Box>
       </Box>
 
